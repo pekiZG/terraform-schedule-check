@@ -68,4 +68,7 @@ jobs:
 
     # Runs a single command using the runners shell
     - name: Send greeting
-      run: echo "Hello ${{ github.event.inputs.name }}; this was a ${{ steps.plan.conclusion }}"
+      run: echo "Hello ${{ github.event.inputs.name }}; after continue-on-error this is a ${{ steps.plan.conclusion }}; before continue-on-error this is a ${{ steps.plan.outcome }};"
+    - run: echo ${{ steps.plan.outputs.stdout }}
+    - run: echo ${{ steps.plan.outputs.stderr }}
+    - run: echo ${{ steps.plan.outputs.exitcode }}
