@@ -25,6 +25,8 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    # Setup terraform from https://github.com/marketplace/actions/hashicorp-setup-terraform
+    - uses: hashicorp/setup-terraform@v2
     # Runs a single command using the runners shell
     - name: Send greeting
       run: echo "Hello ${{ github.event.inputs.name }}"
