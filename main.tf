@@ -10,11 +10,11 @@ terraform {
 }
 
 provider "aws" {
-  region  = "eu-central-1"
+  region = "eu-central-1"
 }
 
 resource "aws_instance" "app_server" {
-  ami           = "ami-0a1ee2fb28fe05df3"
+  ami           = "ami-0a1ee2fb28fe05df3"           # At one point break this line to check exit codes
   instance_type = "t2.micro"
 
   tags = {
