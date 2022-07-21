@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: Manual workflow
+name: Check Terraform Plan exit code
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -22,7 +22,7 @@ permissions:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "greet"
-  greet:
+  exit-code-check:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -63,20 +63,21 @@ jobs:
       run: terraform plan -no-color -detailed-exitcode
       continue-on-error: true           # This is set to true, so it can be checked later; for more details see: https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
 
+    # Runs a single command using the runners shell
+    - name: Check conclusion and outcome of terraform plan step
+      run: echo "Hello ${{ github.event.inputs.name }}; after continue-on-error this is a ${{ steps.plan.conclusion }}; before continue-on-error this is a ${{ steps.plan.outcome }};"
+
     # Check exit codes on Terraform Plan; 
     - name: Terraform Plan Succeeded with empty diff (no changes)
       if: ${{ steps.plan.outputs.exitcode == 0 }}
-      run: echo ${{ steps.plan.outputs.exitcode }}
+      run: echo Terraform Plan Succeeded with empty diff (no changes) ${{ steps.plan.outputs.exitcode }}
 
     - name: Terraform Plan Error
       if: steps.plan.outputs.exitcode == 1
-      run: echo ${{ steps.plan.outputs.exitcode }}
+      run: echo Terraform Plan Error ${{ steps.plan.outputs.exitcode }}
+      # TODO: ping on slack/email
 
     - name: Terraform Plan Succeeded with non-empty diff (changes present)
       if: steps.plan.outputs.exitcode == 2
-      run: echo ${{ steps.plan.outputs.exitcode }}
-
-    # Runs a single command using the runners shell
-    - name: Send greeting
-      run: echo "Hello ${{ github.event.inputs.name }}; after continue-on-error this is a ${{ steps.plan.conclusion }}; before continue-on-error this is a ${{ steps.plan.outcome }};"
-    - run: echo ${{ steps.plan.outputs.exitcode }}
+      run: echo Terraform Plan Succeeded with non-empty diff (changes present) ${{ steps.plan.outputs.exitcode }}
+      # TODO: ping on slack/email
