@@ -64,18 +64,15 @@ jobs:
       continue-on-error: true           # This is set to true, so it can be checked later; for more details see: https://docs.github.com/en/actions/learn-github-actions/contexts#steps-context
 
     # Check exit codes on Terraform Plan; 
-    - uses: actions/github-script@v6
-      name: Terraform Plan Succeeded with empty diff (no changes)
+    - name: Terraform Plan Succeeded with empty diff (no changes)
       if: ${{ steps.plan.outputs.exitcode == 0 }}
       run: echo ${{ steps.plan.outputs.exitcode }}
 
-    - uses: actions/github-script@v6
-      name: Terraform Plan Error
+    - name: Terraform Plan Error
       if: steps.plan.outputs.exitcode == 1
       run: echo ${{ steps.plan.outputs.exitcode }}
 
-    - uses: actions/github-script@v6
-      name: Terraform Plan Succeeded with non-empty diff (changes present)
+    - name: Terraform Plan Succeeded with non-empty diff (changes present)
       if: steps.plan.outputs.exitcode == 2
       run: echo ${{ steps.plan.outputs.exitcode }}
 
