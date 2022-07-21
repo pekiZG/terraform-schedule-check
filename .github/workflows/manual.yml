@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: Check Terraform Plan exit code
+name: Check Terraform Plan for non-empty diff (changes present)
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
