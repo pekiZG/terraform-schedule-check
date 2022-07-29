@@ -69,7 +69,7 @@ jobs:
 
     # Check exit codes on Terraform Plan; 
     - name: Terraform Plan Succeeded with empty diff (no changes)
-      id: slack 
+      id: slack-exit-code-0
       if: ${{ steps.plan.outputs.exitcode == 0 }}
       uses: slackapi/slack-github-action@v1.18.0
       with:
@@ -96,7 +96,7 @@ jobs:
       # TODO: ping on slack/email
 
     - name: Terraform Plan Succeeded with non-empty diff (changes present)
-      id: slack
+      id: slack-exit-code-2
       if: steps.plan.outputs.exitcode == 2
       uses: slackapi/slack-github-action@v1.18.0
       with:
