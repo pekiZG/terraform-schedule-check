@@ -69,6 +69,25 @@ jobs:
 
     # Check exit codes on Terraform Plan; 
     - name: Terraform Plan Succeeded with empty diff (no changes)
+      id: slack 
+      uses: slackapi/slack-github-action@v1.18.0
+      with:
+        payload: |
+          {
+            "text": "GitHub Action build result: ${{ job.status }} || github.event.head_commit.url }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "GitHub Action build result: ${{ job.status }} || github.event.head_commit.url }}"
+                }
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       if: ${{ steps.plan.outputs.exitcode == 0 }}
       run: echo 'Terraform Plan Succeeded with empty diff, no changes; exitcode is ${{ steps.plan.outputs.exitcode }}'
 
