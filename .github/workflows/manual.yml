@@ -70,6 +70,7 @@ jobs:
     # Check exit codes on Terraform Plan; 
     - name: Terraform Plan Succeeded with empty diff (no changes)
       id: slack 
+      if: ${{ steps.plan.outputs.exitcode == 0 }}
       uses: slackapi/slack-github-action@v1.18.0
       with:
         payload: |
@@ -88,8 +89,6 @@ jobs:
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-      if: ${{ steps.plan.outputs.exitcode == 0 }}
-      run: echo 'Terraform Plan Succeeded with empty diff, no changes; exitcode is ${{ steps.plan.outputs.exitcode }}'
 
     - name: Terraform Plan Error
       if: steps.plan.outputs.exitcode == 1
