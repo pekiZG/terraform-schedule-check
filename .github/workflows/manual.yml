@@ -101,13 +101,13 @@ jobs:
       with:
         payload: |
           {
-            "text": "Link: ${{ github.event.head_commit.url }}",
+            "text": "Terraform plan result",
             "blocks": [
               {
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "Terraform plan result: ${{ env.SLACK_MESSAGE }}"
+                  "text": "${{ env.SLACK_MESSAGE }} || ${{ github.event.head_commit.url }}"
                 }
               }
             ]
