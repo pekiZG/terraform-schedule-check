@@ -122,7 +122,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "${{ env.SLACK_MESSAGE }}"
+                  "text": "${{ env.SLACK_MESSAGE }}\n${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}"
                 }
               }
             ]
