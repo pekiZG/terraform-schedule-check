@@ -21,11 +21,13 @@ permissions:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "greet"
+  # This workflow contains of two jobs "terraform-exit-code-check" and "notify-on-change"
   terraform-exit-code-check:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
+    # Map a step output to a job output
+    outputs:
+      terraform-exit-code: ${{ steps.plan.outputs.exitcode }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Check out branch to runner
@@ -67,48 +69,44 @@ jobs:
     - name: Check conclusion and outcome of terraform plan step
       run: echo "Hello ${{ github.event.inputs.name }}; after continue-on-error this is a ${{ steps.plan.conclusion }}; before continue-on-error this is a ${{ steps.plan.outcome }};"
 
+  
+  notify-on-change:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
     # Check exit codes on Terraform Plan; 
     - name: Terraform Plan Succeeded with empty diff (no changes)
       id: slack-exit-code-0
-      if: ${{ steps.plan.outputs.exitcode == 0 }}
-      uses: slackapi/slack-github-action@v1.18.0
-      with:
-        payload: |
-          {
-            "text": "GitHub Action build result: ${{ job.status }} || github.event.head_commit.url }}",
-            "blocks": [
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "GitHub Action build result: ${{ job.status }} || github.event.head_commit.url }}\nTerraform Plan Succeeded with empty diff, no changes; exitcode is ${{ steps.plan.outputs.exitcode }}"
-                }
-              }
-            ]
-          }
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      if: terraform-exit-code-check.outputs.terraform-exit-code == 0
+      run: echo "SLACK_MESSAGE=Terraform Plan Succeeded with empty diff; No changes;" >> $GITHUB_ENV
 
     - name: Terraform Plan Error
-      if: steps.plan.outputs.exitcode == 1
-      run: echo 'Terraform Plan Error; exitcode is ${{ steps.plan.outputs.exitcode }}'
-      # TODO: ping on slack/email
+      id: slack-exit-code-1
+      if: terraform-exit-code-check.outputs.terraform-exit-code == 1
+      run: echo "SLACK_MESSAGE=Terraform Plan Error;"  >> $GITHUB_ENV
 
     - name: Terraform Plan Succeeded with non-empty diff (changes present)
       id: slack-exit-code-2
-      if: steps.plan.outputs.exitcode == 2
+      if: terraform-exit-code-check.outputs.terraform-exit-code == 2
+      run: echo "SLACK_MESSAGE=Terraform Plan Succeeded with non-empty diff; Changes present;"  >> $GITHUB_ENV
+
+
+    # Ping on slack/email or some other way in the future                   # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
+    - name: Check if there is message to send
+      id: slack
       uses: slackapi/slack-github-action@v1.18.0
       with:
         payload: |
           {
-            "text": "GitHub Action build result: ${{ job.status }} || github.event.head_commit.url }}",
+            "text": "Terraform plan result: ${{ github.event.head_commit.url }}",
             "blocks": [
               {
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "GitHub Action build result: ${{ job.status }} || github.event.head_commit.url }}\nTerraform Plan Succeeded with non-empty diff, changes present; exitcode is ${{ steps.plan.outputs.exitcode }}"
+                  "text": "Terraform plan result: ${{ env.SLACK_MESSAGE }}"
                 }
               }
             ]
