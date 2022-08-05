@@ -68,8 +68,8 @@ jobs:
     # Runs a single command using the runners shell
     - name: Check conclusion and outcome of terraform plan step
       run: echo "Hello ${{ github.event.inputs.name }}; after continue-on-error this is a ${{ steps.plan.conclusion }}; before continue-on-error this is a ${{ steps.plan.outcome }};"
-  
-    
+
+
   notify-on-change:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
@@ -94,9 +94,10 @@ jobs:
       run: echo "SLACK_MESSAGE=Terraform Plan Succeeded with non-empty diff; Changes present;" >> $GITHUB_ENV
 
 
-    # Ping on slack/email or some other way in the future                   # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
+    # Ping on slack/email or some other way in the future                                       # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
     - name: Check if there is message to send
       id: slack
+      if: ${{ env.SLACK_MESSAGE != 'Terraform Plan Succeeded with empty diff; No changes;' }}   # Inform us only if Error or Changes present
       uses: slackapi/slack-github-action@v1.18.0
       with:
         payload: |
