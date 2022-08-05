@@ -86,12 +86,12 @@ jobs:
     - name: Terraform Plan Error
       id: slack-exit-code-1
       if: needs.terraform-exit-code-check.outputs.terraform-exit-code == 1
-      run: echo "SLACK_MESSAGE=Terraform Plan Error;"  >> $GITHUB_ENV
+      run: echo "SLACK_MESSAGE=Terraform Plan Error;" >> $GITHUB_ENV
 
     - name: Terraform Plan Succeeded with non-empty diff (changes present)
       id: slack-exit-code-2
       if: needs.terraform-exit-code-check.outputs.terraform-exit-code == 2
-      run: echo "SLACK_MESSAGE=Terraform Plan Succeeded with non-empty diff; Changes present;"  >> $GITHUB_ENV
+      run: echo "SLACK_MESSAGE=Terraform Plan Succeeded with non-empty diff; Changes present;" >> $GITHUB_ENV
 
 
     # Ping on slack/email or some other way in the future                   # https://docs.github.com/en/actions/learn-github-actions/expressions#operators
@@ -107,7 +107,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "${{ env.SLACK_MESSAGE }} || ${{ github.event.head_commit.url }}"
+                  "text": "${{ env.SLACK_MESSAGE }}"
                 }
               }
             ]
